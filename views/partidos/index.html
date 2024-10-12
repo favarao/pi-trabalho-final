@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista Eventos</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <!-- Custom CSS -->
+
+  <link rel="stylesheet" href="/assets/css/estilos.css">
+</head>
+
+<body>
+  <div class="container">
+    <a class="mx-2" href="/sair">Sair</a>
+    <div class="msg" style="display:none;"></div>
+    <h1>Lista de eventos</h1>
+    <div class="card">
+      <button type="button" class="btn btn-primary btn-add" data-bs-toggle="modal"
+        data-bs-target="#cadastroEventoModal">
+        Cadastrar Evento
+      </button>
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Nome</th>
+          <th scope="col">Ação</th>
+        </tr>
+      </thead>
+      <tbody class="conteudo">
+
+      </tbody>
+    </table>
+  </div>
+  <div class="modal fade" id="cadastroEventoModal" tabindex="-1" aria-labelledby="cadastroEventoModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cadastroEventoModalLabel">Cadastro de Evento</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="cadastroEventoForm">
+            <input type="hidden" id="id" name="id">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="nome" class="form-label">Nome</label>
+                  <input type="text" class="form-control" id="nome" name="nome" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="cidade" class="form-label">Cidade</label>
+                  <input type="text" class="form-control" id="cidade" name="cidade" required>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="endereco" class="form-label">Endereço</label>
+                  <input type="text" class="form-control" id="endereco" name="endereco" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="data" class="form-label">Data</label>
+                  <input type="date" class="form-control" id="data" max="9999-12-31" name="data" required>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="quantidade" class="form-label">Quantidade</label>
+                  <input type="number" class="form-control" id="quantidade" name="quantidade" min="0" step="1">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="valor" class="form-label">Valor</label>
+                  <input type="number" class="form-control" id="valor" name="valor" min="0.01" step="0.01">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+
+              <div class="col-md-12">
+                <div class="mb-3">
+                  <label for="descricao" class="form-label">Descrição</label>
+                  <textarea class="form-control" id="descricao" name="descricao" rows="3"></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="status" class="form-label">Status</label>
+                  <select class="form-select" id="status" name="status" required>
+                    <option value="1">Ativo</option>
+                    <option value="0">Inativo</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          <button type="submit" form="cadastroEventoForm" class="btn btn-primary">Salvar</button>
+          <div class="w-100">
+            <div class="msg text-success"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/assets/js/jquery-3.7.1.min.js"></script>
+  <script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+  <!-- Custom JS -->
+
+  <script src="/assets/js/scripts.js"></script>
+  <script>
+    function exibirMensagem(mensagem, tipo) {
+      $(".msg").text(mensagem).addClass(tipo).slideDown();
+      setTimeout(function () {
+        $(".msg").text('').removeClass(tipo).slideUp();
+      }, 5000);
+    }
+
+    $(".btn-add").click(function () {
+      $("#cadastroEventoModalLabel").text("Cadastro de Evento");
+      $("#id").val('');
+      $("#nome").val('');
+      $("#cidade").val('');
+      $("#endereco").val('');
+      $("#data").val(new Date().toISOString().split('T')[0]);
+      $("#quantidade").val('');
+      $("#valor").val('');
+      $("#descricao").val('');
+      $("#status").val(1);
+      $(".msg").text('');
+    });
+
+    function edita(id) {
+      fetch('http://localhost:4000/evento/' + id)
+        .then(response => response.json())
+        .then(evento => {
+          $("#id").val(evento.id);
+          $("#nome").val(evento.nome);
+          $("#cidade").val(evento.cidade);
+          $("#endereco").val(evento.endereco);
+          $("#data").val(new Date(evento.data).toISOString().split('T')[0]);
+          $("#quantidade").val(evento.quantidade);
+          $("#valor").val(evento.valor);
+          $("#descricao").val(evento.descricao);
+          $("#status").val(evento.status);
+          $(".msg").text('');
+          $("#cadastroEventoModalLabel").text("Editar Evento");
+          $("#cadastroEventoModal").modal('toggle');
+        })
+        .catch(error => exibirMensagem('Erro ao buscar evento', 'text-danger'));
+    }
+
+    function deleta(id) {
+      if (confirm("Tem certeza que deseja excluir este evento?")) {
+        fetch('http://localhost:4000/evento/' + id, {
+          method: 'DELETE'
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.status == true) {
+              atualizarTabela();
+              exibirMensagem(data.message, 'text-success');
+            }
+            else
+              exibirMensagem(data.message, 'text-danger');
+          })
+          .catch(error => exibirMensagem('Erro ao excluir evento', 'text-danger'));
+      }
+    }
+
+    function insertEvento(json) {
+      fetch('http://localhost:4000/evento', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: json
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status == true)
+            exibirMensagem(data.message, 'text-success');
+          else
+            exibirMensagem(data.message, 'text-danger');
+        })
+        .catch(error => exibirMensagem('Erro ao criar evento', 'text-danger'))
+        .finally(() => {
+          $("#cadastroEventoModal").modal('toggle');
+          atualizarTabela();
+        });
+    }
+
+    function updateEvento(json) {
+      fetch('http://localhost:4000/evento', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: json
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status == true)
+            exibirMensagem(data.message, 'text-success');
+          else
+            exibirMensagem(data.message, 'text-danger');
+
+        })
+        .catch(error => console.error('Error ao atualizar evento:', error))
+        .finally(() => {
+          $("#cadastroEventoModal").modal('toggle');
+          atualizarTabela();
+        });
+    }
+
+    $("#cadastroEventoForm").submit(function () {
+      event.preventDefault();
+
+      var formData = JSON.stringify({
+        id: $("#id").val(),
+        nome: $("#nome").val(),
+        cidade: $("#cidade").val(),
+        endereco: $("#endereco").val(),
+        data: $("#data").val(),
+        quantidade: $("#quantidade").val(),
+        valor: $("#valor").val(),
+        descricao: $("#descricao").val(),
+        status: $("#status").val()
+      });
+
+      if ($("#id").val())
+        updateEvento(formData);
+      else
+        insertEvento(formData);
+    });
+
+    function atualizarTabela() {
+      fetch('http://localhost:4000/eventos')
+        .then(response => response.json())
+        .then(eventos => {
+          $('.conteudo').empty(); // Clear the table content before appending new data
+          eventos.forEach(evento => {
+            const tr = `<tr>
+                  <td>${evento.nome}</td>
+                  <td>
+                    <button class="btn btn-primary btn-edit" onclick="edita('${evento.id}')">Editar</button>
+                    <button class="btn btn-danger btn-delete" onclick="deleta('${evento.id}')">Excluir</button>
+                  </td>
+                  </tr>`;
+            $('.conteudo').append(tr);
+          });
+        })
+        .catch(error => exibirMensagem('Erro ao buscar eventos', 'text-danger'));
+    }
+    
+    $(document).ready(function () {
+      atualizarTabela();
+    });
+
+  </script>
+</body>
+
+</html>
