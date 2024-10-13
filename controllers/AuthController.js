@@ -1,7 +1,7 @@
 class AuthController{
     async loginView(req, res){
         if(req.session && req.session.user){
-            res.redirect('/partidos');
+            res.redirect('/menu');
         }
         else{
             res.sendFile('login.html', { root: 'views' });
@@ -12,7 +12,6 @@ class AuthController{
     async autenticar(req, res){
         const usuario = req.body.usuario;
         const senha = req.body.senha;
-        console.log(req.body);
         if(usuario === 'joao' && senha === 'fipp'){
             req.session.autenticado = true;
             res.status(200).json({ status: true, message: 'Autenticação bem-sucedida' });
