@@ -7,6 +7,19 @@ import autenticado from '../middleware/auth.js';
 
 const router = express.Router();
 
+router.get('/', (req, res) => {
+    res.redirect('/login');
+});
+
+//pagina de login
+router.get('/login', AuthController.loginView);
+
+//login
+router.post('/login', AuthController.autenticar);
+
+//logout
+router.get('/sair', AuthController.logout);
+
 //paginas
 router.use('/candidatos', autenticado,express.static('views/candidatos'));
 router.use('/partidos', autenticado,express.static('views/partidos'));
@@ -25,18 +38,5 @@ router.get('/api/candidato/:id', autenticado, CandidatoController.getCandidato);
 router.post('/api/candidato', autenticado, CandidatoController.insertCandidato);
 router.put('/api/candidato', autenticado, CandidatoController.updateCandidato);
 router.delete('/api/candidato/:id', autenticado, CandidatoController.deleteCandidato);
-
-router.get('/', (req, res) => {
-    res.redirect('/login');
-});
-
-//pagina de login
-router.get('/login', AuthController.loginView);
-
-//login
-router.post('/login', AuthController.autenticar);
-
-//logout
-router.get('/sair', AuthController.logout);
 
 export default router;
